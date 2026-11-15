@@ -1,0 +1,9 @@
+name: Run Jest
+
+description: "Run unit + accessibility tests"
+
+runs:
+  using: composite
+  steps:
+    - name: Run Jest unit + accessibility tests
+      run: npm run test
