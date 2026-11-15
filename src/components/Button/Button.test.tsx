@@ -1,9 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { axe } from "jest-axe";
+import "jest-axe/extend-expect";
 import { ThemeProvider } from "../../ThemeContext";
 import Button from "./Button";
-import "jest-axe/extend-expect";
+import type { MesomianTheme } from "../../theme";
 
 describe("MesomianButton", () => {
   test("renders children and default variant", () => {
@@ -68,11 +69,32 @@ describe("MesomianButton", () => {
   });
 
   test("supports custom theme colors", () => {
-    const customTheme = {
-      colors: {
-        light: { primary: "#ff0000" },
-      },
+    const fullTokens = {
+      primary: "#ff0000",
+      primaryHover: "#cc0000",
+      primaryActive: "#a00000",
+      secondary: "#64748b",
+      secondaryHover: "#475569",
+      surface: "#ffffff",
+      surfaceAlt: "#f8fafc",
+      background: "#f1f5f9",
+      text: "#0f172a",
+      textMuted: "#64748b",
+      border: "#cbd5e1",
+      borderFocus: "#2563eb",
+      error: "#dc2626",
+      errorHover: "#b91c1c",
+      success: "#059669",
+      warning: "#d97706",
+      focusRing: "rgba(37, 99, 235, 0.4)",
     };
+    const customTheme = {
+      mode: "light" as const,
+      colors: {
+        light: fullTokens,
+        dark: fullTokens,
+      },
+    } as Partial<MesomianTheme>;
     render(
       <ThemeProvider theme={customTheme}>
         <Button>Styled</Button>

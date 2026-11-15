@@ -1,7 +1,19 @@
-import { useEffect, useRef, useCallback, useState } from "react";
-import { useTheme } from "../../ThemeContext";
+import { useEffect, useRef, useCallback, useState, type ReactNode, type MouseEventHandler, type KeyboardEventHandler } from "react";
+import { useTheme, useColorTokens } from "../../ThemeContext";
 
-function focusableElements(container) {
+interface DialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title?: ReactNode;
+  description?: ReactNode;
+  children: ReactNode;
+  className?: { overlay?: string; dialog?: string };
+  style?: { overlay?: React.CSSProperties; dialog?: React.CSSProperties };
+  closeOnOverlayClick?: boolean;
+  closeOnEscape?: boolean;
+}
+
+function focusableElements(container: HTMLElement | null) {
   if (!container) return [];
   return container.querySelectorAll(
     'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]), details, summary'
@@ -18,28 +30,29 @@ const Dialog = ({
   style = {},
   closeOnOverlayClick = true,
   closeOnEscape = true,
-}) => {
+}: DialogProps) => {
   const theme = useTheme();
-  const overlayRef = useRef(null);
-  const dialogRef = useRef(null);
-  const previousFocus = useRef(null);
+  const c = useColorTokens();
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previousFocus = useRef<HTMLElement | null>(null);
   const [mounted, setMounted] = useState(false);
 
   const handleKeyDown = useCallback(
-    (e) => {
+    (e: KeyboardEvent) => {
       if (e.key === "Escape" && closeOnEscape) {
         onClose();
       }
       if (e.key === "Tab" && dialogRef.current) {
         const focusables = focusableElements(dialogRef.current);
-        const first = focusables[0];
-        const last = focusables[focusables.length - 1];
+        const first = focusables[0] as HTMLElement | null;
+        const last = focusables[focusables.length - 1] as HTMLElement | null;
         if (e.shiftKey && document.activeElement === first) {
           e.preventDefault();
-          last.focus();
+          last?.focus();
         } else if (!e.shiftKey && document.activeElement === last) {
           e.preventDefault();
-          first.focus();
+          first?.focus();
         }
       }
     },
@@ -48,14 +61,14 @@ const Dialog = ({
 
   useEffect(() => {
     if (isOpen) {
-      previousFocus.current = document.activeElement;
+      previousFocus.current = document.activeElement as HTMLElement | null;
       setMounted(true);
       document.body.style.overflow = "hidden";
       document.addEventListener("keydown", handleKeyDown);
       requestAnimationFrame(() => {
         if (!dialogRef.current) return;
         const focusables = focusableElements(dialogRef.current);
-        if (focusables.length) focusables[0].focus();
+        if (focusables.length) (focusables[0] as HTMLElement).focus();
         else dialogRef.current.focus();
       });
     } else {
@@ -70,7 +83,7 @@ const Dialog = ({
     };
   }, [isOpen, handleKeyDown]);
 
-  const handleOverlayClick = useCallback(
+  const handleOverlayClick: MouseEventHandler<HTMLDivElement> = useCallback(
     (e) => {
       if (closeOnOverlayClick && e.target === e.currentTarget) {
         onClose();
@@ -79,7 +92,32 @@ const Dialog = ({
     [closeOnOverlayClick, onClose]
   );
 
+  const handleOverlayKeyDown: KeyboardEventHandler<HTMLDivElement> = useCallback(
+    (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        if (closeOnOverlayClick) onClose();
+      }
+    },
+    [closeOnEscape, closeOnOverlayClick, onClose]
+  );
+
   if (!isOpen && !mounted) return null;
+
+  const dialogStyles: React.CSSProperties = {
+    background: c.surface,
+    border: `1px solid ${c.border}`,
+    borderRadius: theme.radius.lg,
+    boxShadow: theme.shadows.lg,
+    padding: theme.spacing["6"],
+    minWidth: "320px",
+    maxWidth: "560px",
+    maxHeight: "90vh",
+    overflow: "auto",
+    outline: "none",
+    position: "relative",
+    ...style.dialog,
+  };
 
   return (
     <>
@@ -87,6 +125,10 @@ const Dialog = ({
         <div
           ref={overlayRef}
           onClick={handleOverlayClick}
+          onKeyDown={handleOverlayKeyDown}
+          role="button"
+          tabIndex={0}
+          aria-label="Close dialog"
           style={{
             position: "fixed",
             inset: 0,
@@ -95,8 +137,8 @@ const Dialog = ({
             alignItems: "center",
             justifyContent: "center",
             zIndex: 9999,
-            ...(style.overlay ?? {}),
-          }}
+            ...style.overlay,
+          } as React.CSSProperties}
           className={className?.overlay ?? ""}
         />
       )}
@@ -107,20 +149,7 @@ const Dialog = ({
           aria-modal="true"
           aria-labelledby={title ? "mesomian-dialog-title" : undefined}
           aria-describedby={description ? "mesomian-dialog-desc" : undefined}
-          style={{
-            background: theme.colors.surface,
-            border: `1px solid ${theme.colors.border}`,
-            borderRadius: theme.radius.lg,
-            boxShadow: theme.shadows.lg,
-            padding: theme.spacing[6],
-            minWidth: "320px",
-            maxWidth: "560px",
-            maxHeight: "90vh",
-            overflow: "auto",
-            outline: "none",
-            position: "relative",
-            ...(style.dialog ?? {}),
-          }}
+          style={dialogStyles}
           className={className?.dialog ?? ""}
         >
           {title && (
@@ -129,25 +158,25 @@ const Dialog = ({
             </h2>
           )}
           {description && (
-            <p id="mesomian-dialog-desc" style={{ margin: "0.5rem 0 0", color: theme.colors.textMuted, fontSize: theme.typography.fontSize.sm }}>
+            <p id="mesomian-dialog-desc" style={{ margin: "0.5rem 0 0", color: c.textMuted, fontSize: theme.typography.fontSize.sm }}>
               {description}
             </p>
           )}
-          <div style={{ marginTop: theme.spacing[4] }}>{children}</div>
+          <div style={{ marginTop: theme.spacing["4"] }}>{children}</div>
           <button
             type="button"
             onClick={onClose}
             style={{
               position: "absolute",
-              top: theme.spacing[3],
-              right: theme.spacing[3],
+              top: theme.spacing["3"],
+              right: theme.spacing["3"],
               background: "none",
               border: "none",
               fontSize: theme.typography.fontSize.xl,
-              color: theme.colors.textMuted,
+              color: c.textMuted,
               cursor: "pointer",
               lineHeight: 1,
-              padding: theme.spacing[1],
+              padding: theme.spacing["1"],
               borderRadius: theme.radius.sm,
             }}
             aria-label="Close dialog"

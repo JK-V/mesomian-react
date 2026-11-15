@@ -1,9 +1,9 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { axe } from "jest-axe";
+import "jest-axe/extend-expect";
 import { ThemeProvider } from "../../ThemeContext";
 import Dialog from "./Dialog";
-import "jest-axe/extend-expect";
 
 describe("MesomianDialog", () => {
   test("renders dialog when open", () => {

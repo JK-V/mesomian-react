@@ -1,4 +1,94 @@
-export const colors = {
+export type ColorMode = "light" | "dark";
+
+export interface ColorTokens {
+  primary: string;
+  primaryHover: string;
+  primaryActive: string;
+  secondary: string;
+  secondaryHover: string;
+  surface: string;
+  surfaceAlt: string;
+  background: string;
+  text: string;
+  textMuted: string;
+  border: string;
+  borderFocus: string;
+  error: string;
+  errorHover: string;
+  success: string;
+  warning: string;
+  focusRing: string;
+}
+
+export interface ColorTheme {
+  light: ColorTokens;
+  dark: ColorTokens;
+}
+
+export interface SpacingTokens {
+  [key: string]: string;
+}
+
+export interface TypographyTokens {
+  fontFamily: {
+    sans: string;
+    mono: string;
+  };
+  fontSize: {
+    xs: string;
+    sm: string;
+    base: string;
+    lg: string;
+    xl: string;
+    "2xl": string;
+    "3xl": string;
+  };
+  fontWeight: {
+    normal: number;
+    medium: number;
+    semibold: number;
+    bold: number;
+  };
+  lineHeight: {
+    tight: number;
+    normal: number;
+    relaxed: number;
+  };
+}
+
+export interface RadiusTokens {
+  none: string;
+  sm: string;
+  md: string;
+  lg: string;
+  xl: string;
+  full: string;
+}
+
+export interface ShadowTokens {
+  sm: string;
+  md: string;
+  lg: string;
+  focus: string;
+}
+
+export interface BreakpointTokens {
+  sm: string;
+  md: string;
+  lg: string;
+  xl: string;
+}
+
+export interface DesignTokens {
+  colors: ColorTheme;
+  spacing: SpacingTokens;
+  typography: TypographyTokens;
+  radius: RadiusTokens;
+  shadows: ShadowTokens;
+  breakpoints: BreakpointTokens;
+}
+
+export const colors: ColorTheme = {
   light: {
     primary: "#2563eb",
     primaryHover: "#1d4ed8",
@@ -39,7 +129,7 @@ export const colors = {
   },
 };
 
-export const spacing = {
+export const spacing: SpacingTokens = {
   "0": "0",
   "1": "0.25rem",
   "2": "0.5rem",
@@ -53,7 +143,7 @@ export const spacing = {
   "16": "4rem",
 };
 
-export const typography = {
+export const typography: TypographyTokens = {
   fontFamily: {
     sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     mono: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
@@ -80,7 +170,7 @@ export const typography = {
   },
 };
 
-export const radius = {
+export const radius: RadiusTokens = {
   none: "0",
   sm: "0.25rem",
   md: "0.375rem",
@@ -89,14 +179,14 @@ export const radius = {
   full: "9999px",
 };
 
-export const shadows = {
+export const shadows: ShadowTokens = {
   sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
   md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
   lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
   focus: "0 0 0 3px rgba(37, 99, 235, 0.4)",
 };
 
-export const breakpoints = {
+export const breakpoints: BreakpointTokens = {
   sm: "640px",
   md: "768px",
   lg: "1024px",
