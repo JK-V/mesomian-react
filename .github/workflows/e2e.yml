@@ -30,7 +30,7 @@ jobs:
         run: npx playwright install --with-deps ${{ matrix.browser }}
 
       - name: Build components for E2E
-        run: npx tsc --emitDeclarationOnly --outDir dist
+        run: npx tsc --outDir dist
 
       - name: Run Playwright E2E tests
         run: npm run e2e -- --browser=${{ matrix.browser }}
