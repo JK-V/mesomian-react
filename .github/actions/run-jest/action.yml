@@ -6,4 +6,5 @@ runs:
   using: composite
   steps:
     - name: Run Jest unit + accessibility tests
+      shell: bash
       run: npm run test
