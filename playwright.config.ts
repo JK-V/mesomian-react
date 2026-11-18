@@ -25,4 +25,10 @@ export default defineConfig({
       use: devices["Desktop Safari"],
     },
   ],
+  webServer: {
+    command: "npx vite --config vite.config.ts",
+    port: 3000,
+    reuseExistingServer: !process.env.CI,
+    timeout: 120000,
+  },
 });

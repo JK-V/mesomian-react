@@ -29,9 +29,6 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps ${{ matrix.browser }}
 
-      - name: Build components for E2E
-        run: npx tsc --outDir dist
-
       - name: Run Playwright E2E tests
         run: npm run e2e -- --project=${{ matrix.browser }}
 
