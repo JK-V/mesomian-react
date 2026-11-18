@@ -33,7 +33,7 @@ jobs:
         run: npx tsc --outDir dist
 
       - name: Run Playwright E2E tests
-        run: npm run e2e -- --browser=${{ matrix.browser }}
+        run: npm run e2e -- --project=${{ matrix.browser }}
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
